@@ -1,5 +1,6 @@
-import React from 'react';
-import InvoiceField from './InvoiceField';
+import React from "react";
+import InvoiceField from "./InvoiceField";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 
 const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
   const deleteItemHandler = () => {
@@ -12,9 +13,9 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
         <InvoiceField
           onEditItem={(event) => onEdtiItem(event)}
           cellData={{
-            placeholder: 'Item name',
-            type: 'text',
-            name: 'name',
+            placeholder: "Item name",
+            type: "text",
+            name: "name",
             id: id,
             value: name,
           }}
@@ -24,16 +25,16 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
         <InvoiceField
           onEditItem={(event) => onEdtiItem(event)}
           cellData={{
-            type: 'number',
-            min: '1',
-            name: 'qty',
+            type: "number",
+            min: "1",
+            name: "qty",
             id: id,
             value: qty,
           }}
         />
       </td>
       <td className="relative min-w-[100px] md:min-w-[150px]">
-        <svg
+        {/* <svg
           xmlns="http://www.w3.org/2000/svg"
           className="absolute left-2 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400 sm:left-4"
           fill="none"
@@ -46,15 +47,17 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
             strokeWidth={2}
             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
-        </svg>
+        </svg> */}
+        <CurrencyRupeeIcon className="absolute left-2 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400 sm:left-4" />
+
         <InvoiceField
           onEditItem={(event) => onEdtiItem(event)}
           cellData={{
-            className: 'text-right',
-            type: 'number',
-            min: '0.01',
-            step: '0.01',
-            name: 'price',
+            className: "text-right",
+            type: "number",
+            min: "0.01",
+            step: "0.01",
+            name: "price",
             id: id,
             value: price,
           }}
