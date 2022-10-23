@@ -48,7 +48,7 @@ function LoginPage() {
   const [branch, setBranch] = useState("");
   const [sem, setSem] = useState("");
   const [usn, setUsn] = useState("");
-  const [pass, setPass] = useState("");
+  // const [pass, setPass] = useState("");
   const [confirmpass, setConfirmpass] = useState("");
 
   const signupclick = () => {
@@ -72,11 +72,56 @@ function LoginPage() {
   //register  end
 
   // login stud start
-  const [usnlogin, setUsnlogin] = useState("");
-  const [passlogin, setPasslogin] = useState("");
-  const loginclick = () => {};
+  const [email, setemial] = useState("");
+  const [pass, setpass] = useState("");
+  const loginclick = async () => {
+    try {
+      if (email != "" && pass != "") {
+        const res = await axios.get("http://127.0.0.1:8000/api/singleuser/", {
+          params: {
+            email: email,
+          },
+        });
+        console.log(res);
+        if (
+          res.data &&
+          res.data[0].email == email &&
+          res.data[0].password == pass
+        ) {
+          navigate("/user", { state: email });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      window.alert("wrong email or password");
+    }
+  };
   //login stud end
 
+  const [venemail, setVenEmail] = useState("");
+  const [venpassword, setVenPassword] = useState("");
+
+  const submitvenHandler = async () => {
+    try {
+      if (venemail != "" && venpassword != "") {
+        const res = await axios.get("http://127.0.0.1:8000/api/singleadmin/", {
+          params: {
+            email: venemail,
+          },
+        });
+        console.log(res);
+        if (
+          res.data[0].email == venemail &&
+          res.data[0].password == venpassword
+        ) {
+          navigate("/invoice");
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      window.alert("wrong email or password");
+    }
+  };
   return (
     <div className={`${cnt}`}>
       <div className="forms-container">
@@ -124,10 +169,10 @@ function LoginPage() {
                         <FormControl id="email" isRequired>
                           <FormLabel>Email</FormLabel>
                           <Input
-                            value={usnlogin}
-                            onChange={(e) => setUsnlogin(e.target.value)}
+                            // value={usnlogin}
+                            onChange={(e) => setemial(e.target.value)}
                             sx={{ border: "3px solid white" }}
-                            // value={email}
+                            value={email}
                             type="text"
                             placeholder="Enter Your Email"
                             // onChange={(e) => setEmail(e.target.value)}
@@ -137,11 +182,11 @@ function LoginPage() {
                           <FormLabel>Password</FormLabel>
                           <InputGroup size="md">
                             <Input
-                              value={passlogin}
-                              onChange={(e) => setPasslogin(e.target.value)}
+                              // value={passlogin}
+                              // onChange={(e) => setPasslogin(e.target.value)}
                               sx={{ border: "3px solid white" }}
-                              // value={password}
-                              // onChange={(e) => setPassword(e.target.value)}
+                              value={pass}
+                              onChange={(e) => setpass(e.target.value)}
                               type={show ? "text" : "password"}
                               placeholder="Enter password"
                             />
@@ -156,201 +201,26 @@ function LoginPage() {
                             </InputRightElement>
                           </InputGroup>
                         </FormControl>
-                        <Link to={"/user"}>
-                          <Button
-                            colorScheme="blue"
-                            width="240px"
-                            style={{ marginTop: 15 }}
-                            onClick={loginclick}
-                            isLoading={loading}
-                          >
-                            Login
-                          </Button>
-                        </Link>
+                        {/* <Link to={"/user"}> */}
+                        <Button
+                          colorScheme="blue"
+                          width="240px"
+                          style={{ marginTop: 15 }}
+                          onClick={loginclick}
+                          isLoading={loading}
+                        >
+                          Login
+                        </Button>
+                        {/* </Link> */}
                       </VStack>
                     </ChakraProvider>
                   </Typography>
                 </AccordionDetails>
               </Accordion>
-              {/* <Accordion
-                expanded={expanded === "panel2"}
-                onChange={handleChange("panel2")}
-                sx={{
-                  width: "300px",
-                  background: "transparent",
-                  boxShadow: "none",
-                  border: "none",
-                  marginBottom: "20px",
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
-                  aria-controls="panel2bh-content"
-                  id="panel2bh-header"
-                  sx={{
-                    background: "#2b6cb0",
-                    color: "white",
-                    borderRadius: "10px",
-                    height: "40px",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      flexShrink: 0,
-                      fontFamily: "nunito",
-                      fontSize: "1.3rem ",
-                    }}
-                  >
-                    Admin Login
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    <ChakraProvider>
-                      <VStack spacing="10px">
-                        <FormControl id="email" isRequired>
-                          <FormLabel>E-mail</FormLabel>
-                          <Input
-                            sx={{ border: "3px solid white" }}
-                            // value={email}
-                            type="text"
-                            placeholder="Enter Your Email"
-                            // onChange={(e) => setEmail(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormControl id="password" isRequired>
-                          <FormLabel>Password</FormLabel>
-                          <InputGroup size="md">
-                            <Input
-                              sx={{ border: "3px solid white" }}
-                              // value={password}
-                              // onChange={(e) => setPassword(e.target.value)}
-                              type={show ? "text" : "password"}
-                              placeholder="Enter password"
-                            />
-                            <InputRightElement width="4.5rem">
-                              <Button
-                                h="1.75rem"
-                                size="sm"
-                                onClick={handleClick}
-                              >
-                                {show ? "Hide" : "Show"}
-                              </Button>
-                            </InputRightElement>
-                          </InputGroup>
-                        </FormControl>
-                        <Link to={"/invoice"}>
-                          <Button
-                            colorScheme="blue"
-                            width="240px"
-                            style={{ marginTop: 15 }}
-                            // onClick={submitHandler}
-                            isLoading={loading}
-                          >
-                            Login
-                          </Button>
-                        </Link>
-                      </VStack>
-                    </ChakraProvider>
-                  </Typography>
-                </AccordionDetails>
-              </Accordion> */}
             </div>
           </form>
 
           <form className="sign-up-form">
-            {/* <ChakraProvider>
-              <VStack spacing="5px">
-                <FormControl id="first-name" isRequired>
-                  <FormLabel>Name</FormLabel>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter Your Name"
-                    sx={{ border: "3px solid white" }}
-                    // onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="first-name" isRequired>
-                  <FormLabel>Branch</FormLabel>
-                  <Input
-                    value={branch}
-                    onChange={(e) => setBranch(e.target.value)}
-                    placeholder="Enter Your Branch"
-                    sx={{ border: "3px solid white" }}
-                    // onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="first-name" isRequired>
-                  <FormLabel>Sem</FormLabel>
-                  <Input
-                    value={sem}
-                    onChange={(e) => setSem(e.target.value)}
-                    sx={{ border: "3px solid white" }}
-                    placeholder="Enter Your Sem"
-                    // onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-
-                <FormControl id="id" isRequired>
-                  <FormLabel>USN</FormLabel>
-                  <Input
-                    value={usn}
-                    onChange={(e) => setUsn(e.target.value)}
-                    sx={{ border: "3px solid white" }}
-                    type="text"
-                    placeholder="Enter Your USN"
-                    // onChange={(e) => setEmail(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="password" isRequired>
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup size="md">
-                    <Input
-                      value={pass}
-                      onChange={(e) => setPass(e.target.value)}
-                      sx={{ border: "3px solid white" }}
-                      type={show ? "text" : "password"}
-                      placeholder="Enter Password"
-                      // onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? "Hide" : "Show"}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                <FormControl id="password" isRequired>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <InputGroup size="md">
-                    <Input
-                      value={confirmpass}
-                      onChange={(e) => setConfirmpass(e.target.value)}
-                      sx={{ border: "3px solid white" }}
-                      type={show ? "text" : "password"}
-                      placeholder="Confirm password"
-                      // onChange={(e) => setConfirmpassword(e.target.value)}
-                    />
-                    <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? "Hide" : "Show"}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-
-                <Button
-                  colorScheme="blue"
-                  width="100%"
-                  style={{ marginTop: 15 }}
-                  onClick={signupclick}
-                  isLoading={picLoading}
-                >
-                  Sign Up
-                </Button>
-              </VStack>
-            </ChakraProvider> */}
             <Accordion
               expanded={expanded === "panel2"}
               onChange={handleChange("panel2")}
@@ -391,10 +261,10 @@ function LoginPage() {
                         <FormLabel>E-mail</FormLabel>
                         <Input
                           sx={{ border: "3px solid white" }}
-                          // value={email}
+                          value={venemail}
                           type="text"
                           placeholder="Enter Your Email"
-                          // onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => setVenEmail(e.target.value)}
                         />
                       </FormControl>
                       <FormControl id="password" isRequired>
@@ -402,8 +272,8 @@ function LoginPage() {
                         <InputGroup size="md">
                           <Input
                             sx={{ border: "3px solid white" }}
-                            // value={password}
-                            // onChange={(e) => setPassword(e.target.value)}
+                            value={venpassword}
+                            onChange={(e) => setVenPassword(e.target.value)}
                             type={show ? "text" : "password"}
                             placeholder="Enter password"
                           />
@@ -414,17 +284,17 @@ function LoginPage() {
                           </InputRightElement>
                         </InputGroup>
                       </FormControl>
-                      <Link to={"/invoice"}>
-                        <Button
-                          colorScheme="blue"
-                          width="240px"
-                          style={{ marginTop: 15 }}
-                          // onClick={submitHandler}
-                          isLoading={loading}
-                        >
-                          Login
-                        </Button>
-                      </Link>
+                      {/* <Link to={"/invoice"}> */}
+                      <Button
+                        colorScheme="blue"
+                        width="240px"
+                        style={{ marginTop: 15 }}
+                        onClick={submitvenHandler}
+                        isLoading={loading}
+                      >
+                        Login
+                      </Button>
+                      {/* </Link> */}
                     </VStack>
                   </ChakraProvider>
                 </Typography>

@@ -7,6 +7,7 @@ import Spinner from "react-bootstrap/Spinner";
 import pdfMake from "pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
+import axios from "axios";
 
 const InvoiceModal = ({
   isOpen,
@@ -19,10 +20,100 @@ const InvoiceModal = ({
   function closeModal() {
     setIsOpen(false);
   }
-
+  const [linkfromcloud, setlinkfromcloud] = useState(null);
   const addNextInvoiceHandler = () => {
-    setIsOpen(false);
-    onAddNextInvoice();
+    console.log(linkfromcloud, email);
+    addlink(linkfromcloud, email);
+    // setIsOpen(false);
+    // onAddNextInvoice();
+  };
+
+  const [likarr, setLinkarr] = useState(null);
+  const [pass, setpass] = useState("123456789");
+
+  const fetchMain = () => {
+    console.log(likarr);
+
+    axios({
+      method: "post",
+      url: "http://127.0.0.1:8000/api/users/",
+      data: {
+        links: [...likarr],
+        email: email,
+        password: pass,
+      },
+    })
+      .then((resmain) => {
+        console.log(resmain);
+        setIsOpen(false);
+        onAddNextInvoice();
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (likarr) {
+      fetchMain();
+    }
+  }, [likarr]);
+
+  const addlink = async (link, email) => {
+    if (linkfromcloud) {
+      const linkpass = new Date()
+        .toString()
+        .substring(12, 25)
+        .replace(/\s/g, "")
+        .replaceAll(":", "");
+      axios({
+        method: "post",
+        url: "http://127.0.0.1:8000/api/links/",
+        data: { link: link, email: email, password: linkpass },
+      })
+        .then((res) => {
+          console.log(res);
+
+          axios({
+            method: "get",
+            url: "http://127.0.0.1:8000/api/singleuser/link",
+            params: { email: email },
+          })
+            .then((reslinks) => {
+              console.log(reslinks);
+              let arr = [];
+
+              for (let i in reslinks.data) {
+                arr.push(reslinks.data[i].id);
+                console.log(reslinks.data[i]);
+              }
+              arr.push(res.data.id);
+              setpass(res.data.password);
+              setLinkarr(arr);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          // if (res.data) {
+          //   axios({
+          //     method: "post",
+          //     url: "http://127.0.0.1:8000/api/users/",
+          //     data: { links: [res.data.id], email: email, password: pass },
+          //   })
+          //     .then((resmain) => {
+          //       console.log(resmain);
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const [loadingdisable, setlaodingdisable] = useState(false);
@@ -119,6 +210,7 @@ const InvoiceModal = ({
         console.log(data);
         // setPic(data.url.toString());
         console.log(data.url.toString());
+        if (data.url) setlinkfromcloud(data.url.toString());
         setdisablenext(true);
         setlaodingdisable(false);
         window.alert("Invoice Uploaded");

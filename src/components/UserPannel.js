@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./UserPannel.css";
 
 import { styled } from "@mui/material/styles";
@@ -11,6 +11,8 @@ import MuiAccordionSummary, {
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import { Button } from "@mui/material";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -54,60 +56,90 @@ function UserPannel() {
   const handleChange = (e) => {
     setExpanded(e);
   };
+
+  const location = useLocation();
+  const [links, setlinks] = useState(null);
+
+  const getData = async (email) => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/api/singleuser/link", {
+        params: {
+          email: email,
+        },
+      });
+      console.log(res.data);
+      setlinks(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (location && location.state) {
+      getData(location.state);
+    }
+  }, [location]);
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
   return (
     <div
       className="container-user"
-      style={{ display: "grid", placeItems: "center" }}
+      style={{
+        display: "grid",
+        gridTemplateRows: "15vh 1fr",
+        justifyContent: "center",
+      }}
     >
       <Box
         sx={{
           background: "white",
           height: "5vh",
           width: "40vw",
-          margin: "20px 0",
+          margin: "auto",
           borderRadius: "20px",
           display: "grid",
           placeItems: "center",
         }}
       >
-        <Box sx={{ fontWeight: "900" }}>Customer Email : email@gmail.com</Box>
+        <Box sx={{ fontWeight: "900" }}>Customer Email : {location.state}</Box>
       </Box>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
-        (item, index) => {
-          return (
-            <Box sx={{ width: "50vw", margin: "10px 0" }}>
-              <Accordion
-                expanded={expanded === `panel${index}`}
-                onChange={(e) => handleChange(`panel${index}`)}
-              >
-                <AccordionSummary
-                  aria-controls="panel1d-content"
-                  id="panel1d-header"
-                  sx={{}}
+
+      <Box>
+        {links &&
+          links.map((item, index) => {
+            return (
+              <Box sx={{ width: "50vw", margin: "10px 0" }}>
+                <Accordion
+                  expanded={expanded === `panel${index}`}
+                  onChange={(e) => handleChange(`panel${index}`)}
                 >
-                  <Typography>Bill Date : 10/10/2022</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{}}>
-                  <Typography>
-                    View Or Download Your bill
-                    <a
-                      style={{ marginLeft: "10px" }}
-                      href="https://asset.cloudinary.com/dykmiet9x/d1b31e3af15de4e54111e6fc96f18c62"
-                    >
-                      <Button
-                        variant="contained"
-                        sx={{ textTransform: "capitalize" }}
-                      >
-                        Click here
-                      </Button>
-                    </a>
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-            </Box>
-          );
-        }
-      )}
+                  <AccordionSummary
+                    aria-controls="panel1d-content"
+                    id="panel1d-header"
+                    sx={{}}
+                  >
+                    <Typography>Bill Date : {item.date_created}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{}}>
+                    <Typography>
+                      View Or Download Your bill
+                      <a style={{ marginLeft: "10px" }} href={item.link}>
+                        <Button
+                          variant="contained"
+                          sx={{ textTransform: "capitalize" }}
+                        >
+                          Click here
+                        </Button>
+                      </a>
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              </Box>
+            );
+          })}
+      </Box>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { uid } from "uid";
 import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import incrementString from "../helpers/incrementString";
+import { useEffect } from "react";
 const date = new Date();
 const today = date.toLocaleDateString("en-GB", {
   month: "numeric",
@@ -14,7 +15,7 @@ const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [discount, setDiscount] = useState("");
   const [tax, setTax] = useState("");
-  const [invoiceNumber, setInvoiceNumber] = useState(1);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
   const [cashierName, setCashierName] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [items, setItems] = useState([
@@ -25,6 +26,15 @@ const InvoiceForm = () => {
       price: "1.00",
     },
   ]);
+
+  useEffect(() => {
+    const d = new Date()
+      .toString()
+      .substring(12, 25)
+      .replace(/\s/g, "")
+      .replaceAll(":", "");
+    setInvoiceNumber(d);
+  }, []);
 
   const [email, setCustomerEmail] = useState("");
 
@@ -43,6 +53,9 @@ const InvoiceForm = () => {
         price: "1.00",
       },
     ]);
+    setCustomerEmail("");
+    setCashierName("");
+    setCustomerName("");
   };
 
   const addItemHandler = () => {
@@ -108,7 +121,7 @@ const InvoiceForm = () => {
             <input
               required
               className="max-w-[130px]"
-              type="number"
+              type="text"
               name="invoiceNumber"
               id="invoiceNumber"
               min="1"
